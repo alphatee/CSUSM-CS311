@@ -6,14 +6,26 @@ Stack implemented with a LL
 Your name here: Daniel Herrera
 Your programmer number here: 11
 Any problems you had? Explain here:
+ - Underflow is empty. How about Overflow? 
+ --I understand that empty classes are sufficient in order to throw an object
+ 
+ - How did you implement this program in just 3 lines?
+
+ - Why use 'NULL' over 'nullptr'? 
+ 
+ - Does my destory function work?
+ -- Yes. one function call contains a loop that destroys releases each node back to OS. 
+
+ - Why does while( tmp != NULL ) work but not while ( tmp->next != NULL ) ? 
+
+---New questions
+ - What is the difference between *this and this? 
 ******************************************************************************************************************/
 #ifndef STACK_L_T_H
 #define STACK_L_T_H
 
 #include <iostream> 
 using namespace std;
-
-const int MAX = 3;
 
 template < class T > //forward declaration needed so we can make stack class a friend of node
 class Stack;
@@ -55,46 +67,26 @@ class Stack
   ~Stack();
   Stack& operator=(const Stack& rhs); //rhs = right hand side of the operator   LHS_obj = RHS_obj
   bool empty() const{return (top==NULL && size==0);} //implement a small function inside the class definition
-  bool full() const {return (size == MAX);}
   int getSize() const{return size;} //implement here
   void push (const T& val);
   void pop();
   T& getTop(); //Return type is T& so client can change the top value
   const T& getTop() const; //A const object needs to call a const member function
 
-  //Make an exception class here - You need to figure out where to throw an exception - I am throwing in 3 functions.
-  class Overflow;
+  //Make an exception class here - You need to figure out where to throw an exception - I am throwing in 3 functions                       
   class Underflow{}; 
-   
-  class Overflow 
-  {
-  private:
-    T val;
-  public: 
-    //constructor
-    Overflow(T v){val = v;}
-    //getter funct to access the private data member
-    T getElem(){return val;} 
-  };
 };
 
 
 template <class T>
 void Stack<T>::push(const T& val)
 {
-  if(full()) 
-    {
-       throw Overflow(val);
-    }
-  else
-    {
        Node<T>* new_node = new Node<T>; //create new_node
        new_node->elem = val;             //set new value to elem of the new_node
        new_node->next = top;             //set new_node->next to point to address of top
        top = new_node;                   //set address of new_node to be the new top
        size++;                           //increment size of stack by 1
       //FYI, I have 4 lines of code here. You may have less or more.
-    }
 }
 
 
@@ -108,7 +100,7 @@ void Stack<T>::pop()
     }
   else 
     {
-      Node<T>* temp = new Node<T>;
+      Node<T>* temp;
       temp = top; //copy address of top to temp
       top = top->next; //set address of top->next as the new top
       delete temp;
@@ -129,17 +121,21 @@ T& Stack<T>::getTop()
 }
 
 
-/*
+
 //***************************************************
 //********  You will make this after the next lecture
 //***************************************************
 template <class T>
-const T& Stack<T>::getTop() const
+const T& Stack<T>::getTop() const //it does the same thing. We needed this version for the reason down below
 {
-
-  return ?????? // same as the getTop() above. We need to provide this so a const object can call getTop(). Recall a const object can only call const member functions.
+  if(empty()) throw Underflow(); 
+  else 
+    { 
+      return top->elem; 
+    }
+  // same as the getTop() above. We need to provide this so a const object can call getTop(). Recall a const object can only call const member functions.
 }
-*/
+
 
 
 /*
@@ -150,47 +146,51 @@ const T& Stack<T>::getTop() const
 //     2
 //     1
 //     --- Bottom ---
+*/
 template <class T>
 ostream& operator<<(ostream& o, const Stack<T>& s)
 {
   //print from top to bottom.
-
+  Node<T>* tmp = s.top;
   cout << "--- Top ---" << endl;
-
-
+  while(tmp != NULL)
+    {
+      o << tmp->elem << endl;
+      tmp = tmp->next;
+    }
   cout << "--- Bottom ---" << endl;
- 
+
+  return o;
 }
-*/
 
 
 template <class T>
 Stack<T>::~Stack()
 {
-  destroy(); 
+  destroy();
+  //cout << "destroyed item in stack" << endl; 
 }
 
 
 //helper function - called from destructor and operator=
+
 template<class T>
 void Stack<T>::destroy() //This function will be called by destructor and operator=
 {
-  //destroy all nodes
-  if(top == NULL) return; //check if top is NULL
-  cout << top->elem << "-->";
-  delete top;
-  /*
-  Node<T>* current = top;  //make copy of top address under alias current
-  while ( current != NULL ) //as long as we are not at the end of list, keep going 
+  if ( top == NULL) return; 
+
+  Node<T>* temp;
+  while( top != NULL ) 
     {
-      current->next = current; 
-      delete current; //work ip
+      temp = top;
+      top = top->next;
+      delete temp;
     }
-  */
+  return; 
 }
 
 
-/*
+
 //***************************************************
 //********  You will make this after the next lecture
 //***************************************************
@@ -201,18 +201,23 @@ Stack<T>& Stack<T>::operator=(const Stack& rhs) //rhs = right hand side of the o
   //http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html
 
   //deep copy
-  if(???????) //Check the addresses of the left and right objects. If they are the same, you are trying to assign the same object   s = s;
-              //You copy only if the left object is not the same as the right object.
-    {
+
+  //Check the addresses of the left and right objects. If they are the same, you are trying to assign the same object   s = s;
+ //You copy only if the left object is not the same as the right object.
+
+  if(this != &rhs)
+    { 
       //destroy any memory space "this" is using. "this" may have elements already. call destroy
-      //call copy
+      //call copy 
+      destroy(); 
+      copy(rhs);
     }
-  return ???????; //return the "this" object 
+  return *this; //return the "this" object 
 }
-*/
 
 
-/*
+
+
 //***************************************************
 //********  You will make this after the next lecture
 //***************************************************
@@ -220,27 +225,63 @@ Stack<T>& Stack<T>::operator=(const Stack& rhs) //rhs = right hand side of the o
 template <class T>
 void Stack<T>::copy(const Stack& source) //source is the stack object copied from. 
 {
-  //"this" object ends up having the same values from source
-  //Make sure this function won't crush when the source stack is empty 
-}
-*/
+  if(source.empty())
 
-/*
+    {
+      throw Underflow();
+    }
+  Node<T>* n; // n keeps track of movement of new list 
+  Node<T>* temp = source.top; // temp moves through source 
+
+  top = new Node<T>; // create 1st node of new list 
+
+  top->elem = temp->elem;  // assign data to new node 
+
+  top->next = NULL;  // cap list with NULL
+
+  n  = top; // point n to top 
+
+  size++;   //designate top as first node 
+
+  temp = temp->next; // go to next node in source
+
+  while(temp != NULL) //unless you hit NULL, do not stop
+    {
+      n->next = new Node<T>; //allocate new memory for new node
+
+      n = n->next; // point n to new node
+
+      n->elem = temp->elem; // copy data
+
+      n->next = NULL; // set default for 'next' as NULL
+
+      size++; //increment size as 1
+
+      temp = temp->next; //move along source 
+    }
+  //"this" object ends up having the same values from source
+  //Make sure this function won't crush when the source stack is empty   
+}
+
+
+
+
+
 //***************************************************
 //********  You will make this after the next lecture
 //***************************************************
 //copy constructor
 template <class T>
-Stack<T>::Stack(const Stack& other)
+Stack<T>::Stack(const Stack& other) : top(NULL)
 {
   //This is a copy constructor. This new object will get the same values as the other object. 
   //You still need to initialize the data members.
-  ???????
-  ???????
+  Node<T>* n = NULL;
 
   //Then you can call the copy function
+  copy(other); 
 }
-*/
+
 
 
 #endif // end the definition here
