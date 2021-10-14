@@ -6,7 +6,7 @@ Homework on radix sort
 Description of this program: ?????
 Your name: Daniel Herrera
 Your programmer number: 11
-Any difficulties?: ?????
+Any difficulties?: Yes, radixsort() 
 ************************************/
 
 #include <iostream>
@@ -134,12 +134,27 @@ int main()
 
 //Implement this function
 //using the radix sort algorithm to sort strings that contain lowercase letters. 
+/*
+  What is happening?
+  Answer: I have an unsorted array called all. I am sorting words in their proper index by ALPHABET
+ */
 void radixSort(LL& all)
 {
-  //Each slot of the buckets array is a LL object.
-  //??? buckets[ALPHABET]; //bucket[0] is for 'a'. There are 26 buckets.   
+  Node* cur;
+  int i; //used to iterate all list. i is the position.
+  LL buckets[ALPHABET]; //bucket[0] is for 'a'. There are 26 buckets
+  string s; //current string
 
-  //checking each place
+  //Each slot of the buckets array is a LL object.
+  for(int p = LEN - 1; p >= 0; p--) //checking each place
+    {
+      for(i = 0, cur = all.begin(); i < all.size(); i++, cur = all.goToNext(cur)) 
+	{
+	  s = cur->getElem(); //get current string
+	  buckets[s[p]- 'a'].addRear(cur); //get the letter and subtract by 'a'/0 to get a number. That is the index that word belongs to in a 26 index array
+        }
+        combineLists(all,buckets); //combine all the lists from the buckets 
+    }
   //To go through each string in all list, check printLL() to see how to iterate
   //go to the correct bucket depending on the letter at the current place and add the node from the all list at the end of the bucket 
 }
@@ -148,28 +163,16 @@ void radixSort(LL& all)
 //combining all lists from buckets
 void combineLists(LL& all_lists,LL buckets[]) //redundant and convoluted
 {
-   int i = 0; //start index of buckets 
-   Node* temp; //iterator for while loop
-   temp = all_lists.begin(); //assign the head address of all_lists to temp
-   
    //call clear() to reset the all list. All the nodes went to correct buckets already.
-   all_lists.clear();
+   all_lists.clear(); //a LL with all the words 
    //populate the all list by combining the lists from the buckets by calling append()
-   while(temp != NULL) //keep looping until the end of the list
+   for(int i = 0; i < ALPHABET; i++) //keep looping until the end of the list, ALPHABET does not include 26
      {
        all_lists.append(buckets[i]); //append to all_lists by combining each  list from the buckets
-       ++i; //move along buckets by 1
-       temp = all_lists.goToNext(temp);
+       ++i; //move along buckets by 1 
+      //reset each list in b[i] by calling clear(). All the nodes were moved to all list already.
+       buckets[i].clear(); //has words in multpile cells may have words stored or empty 
      } 
-  //reset each list in b[i] by calling clear(). All the nodes were moved to all list already.
-   i = 0; //reset counter 
-   temp = buckets->goToNext(temp);
-   while (temp != NULL)
-     {
-       buckets[i].clear();
-       ++i; //move along buckets til the end of list
-       temp = buckets->goToNext(temp);
-     }
 }
 
 //Make a linked list of words from an input file  

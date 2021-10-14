@@ -1,0 +1,8 @@
+
+========== Testing your big-O.h using {5, -4, -3, 2, 4, 0, 3, -1}. Algo A, B and C should all return 9 ============= 
+============ Testing algo A  =============== 
+9
+============ Testing algo B  =============== 
+9
+============ Testing algo C  =============== 
+9

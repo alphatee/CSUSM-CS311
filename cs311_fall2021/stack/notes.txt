@@ -1,0 +1,11 @@
+/*                                                                                                                                                                                                      
+  class Overflow                                                                                                                                                                                          
+  {                                                                                                                                                                                                       
+  private:                                                                                                                                                                                                
+    T val;                                                                                                                                                                                                
+  public:                                                                                                                                                                                                 
+    //constructor                                                                                                                                                                                         
+    Overflow(T v){val = v;}                                                                                                                                                                               
+    //getter funct to access the private data member                                                                                                                                                      
+    T getElem(){return val;}                                                                                                                                                                              
+  }; 
