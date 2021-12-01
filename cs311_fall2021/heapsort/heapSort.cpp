@@ -102,8 +102,7 @@ void bubbleUp(int a[], int i)
 {
   //Write this function after you made insert() and while you are making remove.
   int parent = (i-1)/2; //define parent relative to i 
-
-  while(a[i] > a[0] and a[parent] > a[i]) //out of bounds check and if parent is > than what is at i =>run loop
+  while( a[parent] <  a[i]) //out of bounds check and if parent is > than what is at i =>run loop
     {
       exchange(&a[parent],&a[i]); //exchange values 
       i = parent; //make parent new starting index
@@ -121,15 +120,18 @@ void insert(int a[], int cap, int& n, int el)
   //write this function without calling bubbleUp first. When you work on remove, you will see you will
   //have to have the same code there. Move the code into bubbleUp and call it.
   // if( n == cap ) return; //if heap is full, then return. Below main, cap is 15 and n == 10
-  cap++; //expand capacity from 15 to 16 to insert another
+  // cannot expand capacity. b/c static array  cap++; //expand capacity from 15 to 16 to insert another
   //a[9] == 1 and a[10] == -1 therefore insert at index 10
   //int index = n; //use index for later but store one before terminating value
-  a[n++] = el; //insert el at the end of the heap
-  int p = (n - 1)/2; //the parent of el
-  while ( a[p] < a[n]) //keep bubbling up if true  
+
+  a[n] = el; //insert el at the end of the heap -> implement n later 
+  int p = (n - 1)/2; //the parent of el. example n = 3. p = 1
+  if ( a[p] < a[n]) //keep bubbling up if true  
     {
       bubbleUp(a,n); //fix violation
     }
+  n++;
+  //n is the number of elements. not the index.     i can still use n for index
 }
 
 //a is a max heap                                                                                            
@@ -140,23 +142,27 @@ void remove(int a[], int& n, int el)
   //refer to lecture notes
   //Call bubbleUp and max_heapify instead of coding the same things.
 
-  for(int i = n; i != 0; i--)
+  int found_index = 0;
+
+  for(int i = 0; i < n; i++)
     {
       if(a[i] == el) //execute body if key is found
 	{
-	  exchange(&a[n],&a[i]); //swap what is at index i with the last element
-	  n--; //eleminate last element of heap. due to violation
-          int p = (i - 1)/2;
-	  if(a[p] < a[i] and a[p] < a[0]) //if parrent is less than root and index then bubbleUp
+	  found_index = i;
+	  i = n; 
+	}
+    }
+    exchange(&a[n-1],&a[found_index]); //swap what is at index i with the last elemente
+    n--; //eleminate last element of heap. due to violation
+          int p = (found_index - 1)/2;
+	  if(a[p] < a[found_index]) //if parrent is less than root and index then bubbleUp
 	    { 
 	      bubbleUp(a,n);
 	    }
 	  else //bubbleDown otherwise
 	    {
-	      max_heapify(a,n,i);
-	    }
-	}
-    }
+	      max_heapify(a,n,found_index);
+	    }   
 }
 
 int main()
@@ -192,7 +198,7 @@ int main()
   print(ar4, n); //20 15 19 5 8 11 4 2 3 1 7                                                                 
 
   cout << "testing remove" << endl;
-  remove(ar4, n, 3); //trying to remove 15                                                                  
+  remove(ar4, n, 15); //trying to remove 15                                                                  
   print(ar4, n);//20 8 19 5 7 11 4 2 3 1                                                                     
 
   return 0;

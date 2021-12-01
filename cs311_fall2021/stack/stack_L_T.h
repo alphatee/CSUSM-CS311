@@ -39,6 +39,7 @@ class Node
 {
   friend class Stack<T>; //Stack class accesses the private members of Node
   friend ostream& operator<< <T>(ostream& o, const Stack<T>& s); //operator<< accesses the private members of Node
+  bool operator==(const Stack& lhs, const Stack& rhs);
 
  private:
   T  elem;
@@ -282,6 +283,11 @@ Stack<T>::Stack(const Stack& other) : top(NULL)
   copy(other); 
 }
 
-
+template <class T>
+bool operator==(const Stack& lhs, const Stack& rhs)
+{
+  if(lhs.elem != rhs.elem) return false; //!= used or else infinite loop
+  else return true;
+}
 
 #endif // end the definition here

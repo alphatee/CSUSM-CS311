@@ -151,7 +151,7 @@ void radixSort(LL& all)
       for(i = 0, cur = all.begin(); i < all.size(); i++, cur = all.goToNext(cur)) 
 	{
 	  s = cur->getElem(); //get current string
-	  buckets[s[p]- 'a'].addRear(cur); //get the letter and subtract by 'a'/0 to get a number. That is the index that word belongs to in a 26 index array
+	  buckets[s[p] - 'a'].addRear(cur); //get the letter and subtract by 'a'/0 to get a number. That is the index that word belongs to in a 26 index array
         }
         combineLists(all,buckets); //combine all the lists from the buckets 
     }
